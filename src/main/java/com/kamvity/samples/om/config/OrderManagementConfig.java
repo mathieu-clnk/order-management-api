@@ -4,6 +4,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@ComponentScan("fr.comprehensiveit.samples.om")
+@ComponentScan("com.kamvity.samples.om")
 public class OrderManagementConfig {
 }
