@@ -4,6 +4,7 @@ package com.kamvity.samples.om.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.kamvity.samples.om.config.OrderManagementConfig;
 import com.kamvity.samples.om.response.OrderResponse;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockserver.client.MockServerClient;
@@ -43,6 +44,10 @@ public class OrderServiceTest {
         mockServer = startClientAndServer(8090);
     }
 
+    @AfterAll
+    public static void stopServer() {
+        mockServer.stop();
+    }
 
     String order1 = "{\n" +
             "    \"orderId\": 1,\n" +
