@@ -49,11 +49,16 @@ resilience4j:
     configs:
       default:
         maxRetryAttempts: 3
-        waitDuration: 100
+        waitDuration: 4s
+        maxWaitDuration: 4s
         enableExponentialBackoff: true
         exponentialBackoffMultiplier: 2
+        failAfterMaxAttempts: true
         retryExceptions:
           - java.util.concurrent.TimeoutException
+          - java.lang.NullPointerException
+          - org.springframework.web.reactive.function.client.WebClientResponseException
+          - org.springframework.web.reactive.function.client.WebClientRequestException
     instances:
       orderConfig:
         baseConfig: default
@@ -77,11 +82,14 @@ resilience4j:
         limitRefreshPeriod: 1s
         timeoutDuration: 0
         eventConsumerBufferSize: 100
+    instances:
+      orderConfig:
+        baseConfig: default
 
   timelimiter:
     configs:
       default:
-        cancelRunningFuture: false
+        cancelRunningFuture: true
         timeoutDuration: 1s
     instances:
       orderConfig:

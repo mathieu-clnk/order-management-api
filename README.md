@@ -7,7 +7,7 @@
 This application is Spring Boot 3 Circuit Breaker. 
 The Circuit Breaker design pattern is used to handle the failure of the downstream components.
 As organizations opts more and more for Microservices, it becomes vital to implement such pattern to avoid cascading failures.
-This sample calls the [Order-Terminal-API](https://github.com/mathieucoavoux/order-terminal-api) to retrieve an order.
+This sample calls the [Order-Terminal-API](https://github.com/mathieu-clnk/order-terminal-api) to retrieve an order.
 It provides few examples of how to handle this downstream application failure and return a JSON response to the caller.
 
 ## Testing

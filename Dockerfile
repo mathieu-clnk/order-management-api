@@ -5,7 +5,7 @@ COPY src /tmp/src/
 WORKDIR /tmp/
 RUN mvn package
 
-MAINTAINER mathieu.coavoux.job@gmail.com
+MAINTAINER mathieu.kamvity@gmail.com
 
 EXPOSE 8080
 

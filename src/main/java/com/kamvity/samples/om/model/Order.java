@@ -1,4 +1,4 @@
-package fr.comprehensiveit.samples.om.model;
+package com.kamvity.samples.om.model;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;

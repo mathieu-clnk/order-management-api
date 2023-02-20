@@ -1,4 +1,4 @@
-package fr.comprehensiveit.samples.om.response;
+package com.kamvity.samples.om.response;
 
 public abstract class Response {
 

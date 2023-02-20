@@ -1,4 +1,4 @@
-package fr.comprehensiveit.samples.om;
+package com.kamvity.samples.om;
 
 import org.springframework.context.annotation.Configuration;
 
