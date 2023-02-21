@@ -4,8 +4,7 @@ package com.kamvity.samples.om.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.kamvity.samples.om.config.OrderManagementConfig;
 import com.kamvity.samples.om.response.OrderResponse;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockserver.client.MockServerClient;
 import org.mockserver.integration.ClientAndServer;
@@ -17,7 +16,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 
 import java.util.Optional;
@@ -39,15 +37,33 @@ public class OrderServiceTest {
     OrderService orderService;
     private static ClientAndServer mockServer;
 
+
     @BeforeAll
     public static void startServer() {
         mockServer = startClientAndServer(8090);
+    }
+
+
+    @BeforeEach
+    public void reset() throws InterruptedException {
+        mockServer.reset();
+        //Make sure the Time limiter is passed
+        Thread.sleep(2000);
+        int i = 0;
+        while ( ! mockServer.isRunning() && i < 30) {
+            Thread.sleep(1000);
+            i++;
+        }
     }
 
     @AfterAll
     public static void stopServer() {
         mockServer.stop();
     }
+
+
+
+
 
     String order1 = "{\n" +
             "    \"orderId\": 1,\n" +
@@ -142,7 +158,7 @@ public class OrderServiceTest {
     }
 
     @Test
-    public void testFindByIdOk() throws JsonProcessingException {
+    public void testFindByIdOk() {
         mockOrderGetByIdOK();
         Mono<OrderResponse> mreor = orderService.findOrderById(Optional.of("1"));
         OrderResponse orderResponse = mreor.block();
@@ -161,7 +177,7 @@ public class OrderServiceTest {
                         response()
                                 .withStatusCode(200)
                                 .withBody(order1)
-                                .withDelay(TimeUnit.MINUTES,10)
+                                .withDelay(TimeUnit.MINUTES,2)
                 );
         Mono<OrderResponse> mreor = orderService.findOrderById(Optional.of("1"));
         assert mreor.block() != null;
