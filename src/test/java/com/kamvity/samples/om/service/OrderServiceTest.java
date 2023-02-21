@@ -12,10 +12,15 @@ import org.mockserver.matchers.Times;
 import org.mockserver.model.Header;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 
 import java.util.Optional;
@@ -268,5 +273,42 @@ public class OrderServiceTest {
             }
         }
 
+    }
+
+    @Test
+    public void testGetOrderFallBackWebClientResponse() {
+        Optional<String> id = Optional.of("1");
+        Mono<OrderResponse> mreor = orderService.getOrderFallback(id,WebClientResponseException.create(500,"Unknown",null,null,null));
+        OrderResponse orderResponse = mreor.block();
+        String expectedMessage = "A web client error occurred while during the Order API call. Please contact your administrator.";
+        assertEquals(expectedMessage,orderResponse.getErrorMessage());
+    }
+
+    @Test
+    public void testGetOrderFallBackWebClientResponseRetry() {
+        mockOrderGetByIdOK();
+        Optional<String> id = Optional.of("1");
+        Mono<OrderResponse> mreor = orderService.getOrderFallback(id,WebClientResponseException.create(500,"Service Unavailable",null,null,null));
+        OrderResponse orderResponse = mreor.block();
+        assertEquals("1",orderResponse.getOrderId());
+    }
+
+    //TODO: test with two attempts
+    @Test
+    public void testGetOrderFallBackWebClientRequest() {
+        mockOrderGetByIdRetryDropOK(1);
+        Optional<String> id = Optional.of("1");
+        WebClient webClient = WebClient.create();
+        try {
+            Mono<OrderResponse> response = webClient.get().uri("http://127.0.0.1:8090/v1/order-terminal/get-by-id?orderId=1").accept(MediaType.APPLICATION_JSON)
+                    .retrieve()
+                    .bodyToMono(OrderResponse.class);
+            response.block();
+        }catch (WebClientRequestException we) {
+            Mono<OrderResponse> mreor = orderService.getOrderFallback(id, we);
+            OrderResponse orderResponse = mreor.block();
+            assertEquals("1", orderResponse.getOrderId());
+        }
+        assert true;
     }
 }
