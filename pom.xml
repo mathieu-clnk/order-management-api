@@ -54,33 +54,6 @@
           </execution>
         </executions>
       </plugin>
-      <!--
-      <plugin>
-        <groupId>org.mock-server</groupId>
-        <artifactId>mockserver-maven-plugin</artifactId>
-        <version>5.14.0</version>
-        <configuration>
-          <serverPort>8090</serverPort>
-          <logLevel>DEBUG</logLevel>
-        </configuration>
-        <executions>
-          <execution>
-            <id>process-test-classes</id>
-            <phase>process-test-classes</phase>
-            <goals>
-              <goal>runForked</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>verify</id>
-            <phase>verify</phase>
-            <goals>
-              <goal>stopForked</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      -->
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
