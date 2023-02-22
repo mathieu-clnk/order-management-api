@@ -1,4 +1,5 @@
 ![Coverage](.github/badges/jacoco.svg)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/2ef04f7899824df5a9469cda3f566aa0)](https://www.codacy.com/gh/mathieu-clnk/order-management-api/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=mathieu-clnk/order-management-api&amp;utm_campaign=Badge_Grade)
 
 # Order Management API
 
