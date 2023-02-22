@@ -1,7 +1,7 @@
 
 package com.kamvity.samples.om.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+
 import com.kamvity.samples.om.config.OrderManagementConfig;
 import com.kamvity.samples.om.response.OrderResponse;
 import org.junit.jupiter.api.*;
@@ -12,17 +12,20 @@ import org.mockserver.matchers.Times;
 import org.mockserver.model.Header;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
@@ -293,7 +296,6 @@ public class OrderServiceTest {
         assertEquals("1",orderResponse.getOrderId());
     }
 
-    //TODO: test with two attempts
     @Test
     public void testGetOrderFallBackWebClientRequest() {
         mockOrderGetByIdRetryDropOK(1);
@@ -311,4 +313,50 @@ public class OrderServiceTest {
         }
         assert true;
     }
+
+    @Test
+    public void testGetOrderFallBackNullPointer() {
+        Optional<String> id = Optional.of("1");
+        Mono<OrderResponse> mreor = orderService.getOrderFallback(id,new NullPointerException("Null value"));
+        OrderResponse orderResponse = mreor.block();
+        assert orderResponse.getErrorMessage().contains("An error occurred while during the Order API call.");
+    }
+
+    @Test
+    public void testGetOrderFallBackHttpException() {
+        Optional<String> id = Optional.of("1");
+        HttpHeaders httpHeaders = HttpHeaders.EMPTY;
+        Mono<OrderResponse> mreor = orderService.getOrderFallback(id,HttpServerErrorException.create("500", HttpStatusCode.valueOf(500),"Error",httpHeaders,null,null));
+        OrderResponse orderResponse = mreor.block();
+        String expectedError = "The following HTTP error occurred while during the Order API call: 500";
+        assertEquals(expectedError,orderResponse.getErrorMessage());
+    }
+
+    @Test
+    public void testGetOrderFallBackException() {
+        Optional<String> id = Optional.of("1");
+        Mono<OrderResponse> mreor = orderService.getOrderFallback(id,new Exception("Error"));
+        OrderResponse orderResponse = mreor.block();
+        String expectedError = "An error occurred while during the Order API call. Please contact your administrator.";
+        assertEquals(expectedError,orderResponse.getErrorMessage());
+    }
+
+    @Test
+    public void testGetOrderFallBackNoSuchElement() {
+        Optional<String> id = Optional.of("1");
+        Mono<OrderResponse> mreor = orderService.getOrderFallback(id,new NoSuchElementException("No element"));
+        OrderResponse orderResponse = mreor.block();
+        String expectedError = "Missing parameter(s) while calling the Order API.";
+        assertEquals(expectedError,orderResponse.getErrorMessage());
+    }
+
+    @Test
+    public void testGetOrderFall() {
+        Optional<String> id = Optional.of("1");
+        Mono<OrderResponse> mreor = orderService.getOrderFallback(id);
+        OrderResponse orderResponse = mreor.block();
+        String expectedError = "No Exception. Please contact your administrator.";
+        assertEquals(expectedError,orderResponse.getErrorMessage());
+    }
+
 }

@@ -60,15 +60,11 @@ public class OrderService {
     @RateLimiter(name = CB_ORDER_CONFIG, fallbackMethod = "getOrderFallback")
     public Mono<OrderResponse> findOrderById(Optional<String> id) {
         String url = orderEndpoint + "/get-by-id?orderId=" + id.get();
-        try {
-            Mono<OrderResponse> response = webClient.get().uri(url).accept(MediaType.APPLICATION_JSON)
-                    .retrieve()
-                    .bodyToMono(OrderResponse.class);
-            return response;
-        }catch (Exception e) {
-            log.error(e.getMessage());
-            return Mono.error(e);
-        }
+
+        Mono<OrderResponse> response = webClient.get().uri(url).accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .bodyToMono(OrderResponse.class);
+        return response;
 
     }
     @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
@@ -197,15 +193,10 @@ public class OrderService {
     @Bulkhead(name = CB_ORDER_CONFIG)
     public Mono<OrderResponse> findOrderRetryById(Optional<String> id) {
         String url = orderEndpoint + "/get-by-id?orderId=" + id.get();
-        try {
-            Mono<OrderResponse> response = webClient.get().uri(url).accept(MediaType.APPLICATION_JSON)
-                    .retrieve()
-                    .bodyToMono(OrderResponse.class);
-            return response;
-        }catch (Exception e) {
-            log.error(e.getMessage());
-            return Mono.error(e);
-        }
+        Mono<OrderResponse> response = webClient.get().uri(url).accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .bodyToMono(OrderResponse.class);
+        return response;
 
     }
 
