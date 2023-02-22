@@ -43,6 +43,7 @@ jobs:
 
       - name: Upload code coverage to Codacy
         run: |
+          export CODACY_PROJECT_TOKEN=${{ secrets.CODACY_PROJECT_TOKEN }}
           bash <(curl -Ls https://coverage.codacy.com/get.sh)
 
       #- name: Run codacy-coverage-reporter
