@@ -44,4 +44,5 @@ jobs:
       - name: Publish to SwaggerHub
         run: |
           npm i -g swaggerhub-cli
+          export SWAGGERHUB_API_KEY=${{ secrets.SWAGGERHUB_API_KEY }}
           swaggerhub project:list MATHIEUKAMVITY
