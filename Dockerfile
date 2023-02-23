@@ -5,8 +5,6 @@ COPY src /tmp/src/
 WORKDIR /tmp/
 RUN mvn package
 
-MAINTAINER mathieu.kamvity@gmail.com
-
 EXPOSE 8080
 
 RUN cp /tmp/target/*.jar /opt/om-1.0.0.jar
