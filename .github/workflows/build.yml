@@ -41,15 +41,7 @@ jobs:
           name: jacoco-report
           path: target/site/jacoco/
 
-      - name: Upload code coverage to Codacy
+      - name: Publish to SwaggerHub
         run: |
-          export CODACY_PROJECT_TOKEN=${{ secrets.CODACY_PROJECT_TOKEN }}
-          bash <(curl -Ls https://coverage.codacy.com/get.sh)
-
-      #- name: Run codacy-coverage-reporter
-      #  uses: codacy/codacy-coverage-reporter-action@v1
-      #  with:
-      #    project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
-          # or
-          # api-token: ${{ secrets.CODACY_API_TOKEN }}
-      #    coverage-reports: target/site/jacoco/jacoco.xml
+          npm i -g swaggerhub-cli
+          swaggerhub project:list MATHIEUKAMVITY
