@@ -43,6 +43,10 @@ jobs:
 
       - name: Publish to SwaggerHub (if needed)
         run: |
+          die() {
+            echo -e "\e[0;31mERROR: $1 \e[0m"
+            exit 1
+          }
           update_new() {
             version=$(cat swagger.json|json "info.version")
             swaggerhub api:create MATHIEUKAMVITY/order-management-api/$version -f swagger.json
@@ -51,5 +55,6 @@ jobs:
           npm install -g json-diff
           npm install -g json-diff
           export SWAGGERHUB_API_KEY=${{ secrets.SWAGGERHUB_API_KEY }}
-          swaggerhub api:get MATHIEUKAMVITY/order-management-api -j > published-swagger.json
-          json-diff published-swagger.json swagger.json || update_new
+          [ -f swagger.json ] || die "swagger.json not found."
+          swaggerhub api:get MATHIEUKAMVITY/order-management-api -j > published-swagger.json || die "Swagger hub has returned an error"
+          json-diff published-swagger.json swagger.json && echo "Same version of OpenApi" || update_new
