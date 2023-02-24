@@ -8,6 +8,9 @@ spring:
   application:
     name: order-management-api
 
+openapi:
+  version: v1
+
 management:
   health:
     circuitbreakers.enabled: true

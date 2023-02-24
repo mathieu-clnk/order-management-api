@@ -41,8 +41,15 @@ jobs:
           name: jacoco-report
           path: target/site/jacoco/
 
-      - name: Publish to SwaggerHub
+      - name: Publish to SwaggerHub (if needed)
         run: |
+          update_new() {
+            version=$(cat swagger.json|json "info.version")
+            swaggerhub api:create MATHIEUKAMVITY/order-management-api/$version -f swagger.json
+          }
           npm i -g swaggerhub-cli
+          npm install -g json-diff
+          npm install -g json-diff
           export SWAGGERHUB_API_KEY=${{ secrets.SWAGGERHUB_API_KEY }}
-          swaggerhub project:list
+          swaggerhub api:get MATHIEUKAMVITY/order-management-api -j > published-swagger.json
+          json-diff published-swagger.json swagger.json || update_new

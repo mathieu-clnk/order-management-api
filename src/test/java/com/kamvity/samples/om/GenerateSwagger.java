@@ -1,6 +1,8 @@
 package com.kamvity.samples.om;
 
+import com.kamvity.samples.om.config.OpenApiConfigTest;
 import com.kamvity.samples.om.config.OrderManagementConfig;
+
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,9 +17,10 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
+
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ContextConfiguration(classes = OrderManagementConfig.class)
+@ContextConfiguration(classes = { OrderManagementConfig.class, OpenApiConfigTest.class })
 public class GenerateSwagger {
     @Autowired
     private TestRestTemplate restTemplate;
@@ -27,7 +30,7 @@ public class GenerateSwagger {
 
     @Test
     void contextLoads() throws IOException {
-        String swagger = this.restTemplate.getForObject("http://localhost:8081/v3/api-docs", String.class);
+        String swagger = this.restTemplate.getForObject("http://localhost:"+randomServerPort+"/v3/api-docs", String.class);
 
         FileUtils.writeStringToFile(new File("swagger.json"), swagger, Charset.forName("UTF-8"));
     }
