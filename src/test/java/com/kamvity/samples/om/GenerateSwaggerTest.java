@@ -21,7 +21,7 @@ import java.nio.charset.Charset;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ContextConfiguration(classes = { OrderManagementConfig.class, OpenApiConfigTest.class })
-public class GenerateSwagger {
+public class GenerateSwaggerTest {
     @Autowired
     private TestRestTemplate restTemplate;
 
