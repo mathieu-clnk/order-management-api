@@ -49,7 +49,8 @@ jobs:
           }
           update_new() {
             version=$(cat swagger.json|json "info.version")
-            swaggerhub api:create MATHIEUKAMVITY/order-management-api/$version -f swagger.json
+            swaggerhub api:create MATHIEUKAMVITY/order-management-api/$version -f swagger.json || die "Cannot create the version"
+            swaggerhub api:publish MATHIEUKAMVITY/order-management-api/$version || die "Cannot publish the version"
           }
           npm i -g swaggerhub-cli
           npm install -g json-diff
