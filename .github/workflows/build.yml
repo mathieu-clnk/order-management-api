@@ -49,7 +49,13 @@ jobs:
           }
           update_new() {
             version=$(cat swagger.json|json "info.version")
-            swaggerhub api:create MATHIEUKAMVITY/order-management-api/$version -f swagger.json || die "Cannot create the version"
+            swaggerhub api:get MATHIEUKAMVITY/order-management-api/$version > /dev/null 2>&1
+            if [ "$?" == "0" ]
+            then
+              swaggerhub api:update MATHIEUKAMVITY/order-management-api/$version -f swagger.json || die "Cannot create the version"
+            else
+              swaggerhub api:create MATHIEUKAMVITY/order-management-api/$version -f swagger.json || die "Cannot create the version"
+            fi
             swaggerhub api:publish MATHIEUKAMVITY/order-management-api/$version || die "Cannot publish the version"
           }
           npm i -g swaggerhub-cli
