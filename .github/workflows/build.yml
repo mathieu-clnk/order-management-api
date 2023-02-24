@@ -53,7 +53,7 @@ jobs:
           }
           npm i -g swaggerhub-cli
           npm install -g json-diff
-          npm install -g json-diff
+          npm install -g json
           export SWAGGERHUB_API_KEY=${{ secrets.SWAGGERHUB_API_KEY }}
           [ -f swagger.json ] || die "swagger.json not found."
           swaggerhub api:get MATHIEUKAMVITY/order-management-api -j > published-swagger.json || die "Swagger hub has returned an error"
