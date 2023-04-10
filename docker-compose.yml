@@ -1,0 +1,12 @@
+version: '3.4'
+
+services:
+  order-management-api:
+    image: om-api
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      args:
+        BUILD_ENV: dev
+    ports:
+      - 8080:8080

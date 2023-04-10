@@ -1,0 +1,67 @@
+name: Order Management
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'corretto'
+      - name: Build with Maven
+        run: mvn --batch-mode package
+
+      - name: Generate JaCoCo Badge
+        id: jacoco
+        uses: cicirello/jacoco-badge-generator@v2
+        with:
+          generate-branches-badge: true
+
+      - name: Log coverage percentage
+        run: |
+          echo "coverage = ${{ steps.jacoco.outputs.coverage }}"
+          echo "branch coverage = ${{ steps.jacoco.outputs.branches }}"
+
+      - name: Commit and push the badge (if it changed)
+        uses: EndBug/add-and-commit@v7
+        with:
+          default_author: github_actions
+          message: 'commit badge'
+          add: '*.svg'
+
+      - name: Upload JaCoCo coverage report
+        uses: actions/upload-artifact@v2
+        with:
+          name: jacoco-report
+          path: target/site/jacoco/
+
+      - name: Publish to SwaggerHub (if needed)
+        run: |
+          die() {
+            echo -e "\e[0;31mERROR: $1 \e[0m"
+            exit 1
+          }
+          update_new() {
+            version=$(cat swagger.json|json "info.version")
+            swaggerhub api:get MATHIEUKAMVITY/order-management-api/$version > /dev/null 2>&1
+            if [ "$?" == "0" ]
+            then
+              swaggerhub api:update MATHIEUKAMVITY/order-management-api/$version -f swagger.json || die "Cannot create the version"
+            else
+              swaggerhub api:create MATHIEUKAMVITY/order-management-api/$version -f swagger.json || die "Cannot create the version"
+            fi
+            swaggerhub api:publish MATHIEUKAMVITY/order-management-api/$version || die "Cannot publish the version"
+          }
+          npm i -g swaggerhub-cli
+          npm install -g json-diff
+          npm install -g json
+          export SWAGGERHUB_API_KEY=${{ secrets.SWAGGERHUB_API_KEY }}
+          [ -f swagger.json ] || die "swagger.json not found."
+          swaggerhub api:get MATHIEUKAMVITY/order-management-api -j > published-swagger.json || die "Swagger hub has returned an error"
+          json-diff published-swagger.json swagger.json && echo "Same version of OpenApi" || update_new
